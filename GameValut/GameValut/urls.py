@@ -16,7 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth import views as auth_views # Importiamo le viste di login standard
+from core.views import homepage, registration, create_thread, thread_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('homepage', homepage, name='homepage'),
+    
+    # Registrazione personalizzata
+    path('registration/', registration, name='registration'),
+
+    # Login e Logout standard di Django
+    path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='homepage'), name='logout'),
+
+    # Per l'aggiunta di thread
+    path('newthread/', create_thread, name='create_thread'),
+    path('thread/<int:pk>/', thread_detail, name='thread_detail'),
 ]

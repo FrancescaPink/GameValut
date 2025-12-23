@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core'
 ]
 
 MIDDLEWARE = [
@@ -98,6 +99,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'core.User'
+
+# Dove andare dopo il Login (usa il 'name' della URL che abbiamo dato in urls.py)
+LOGIN_REDIRECT_URL = 'homepage'
+
+# Dove andare dopo il Logout
+LOGOUT_REDIRECT_URL = 'homepage'
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

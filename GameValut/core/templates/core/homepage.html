@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+{% load static %}
+<link href="{% static 'core/style.css' %}" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <title>Gaming Forum & Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="#">🎮 GameValut </a>
+        <div class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+    <span class="nav-item nav-link text-white me-3">Ciao, {{ user.username }}</span>
+    
+    <form action="{% url 'logout' %}" method="post" class="d-inline">
+        {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm">Esci</button>
+    </form>
+            {% else %}
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-item nav-link" href="{% url 'registration' %}">Registrati</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h2 class="mb-0">Discussioni Recenti</h2>
+            {% if user.is_authenticated %}
+                <a href="{% url 'create_thread' %}" class="btn btn-primary btn-sm">+ Nuova Discussione</a>
+            {% endif %}
+        </div> 
+            {% for thread in threads %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {% if thread.is_official_announcement %}
+                                <span class="badge bg-danger">UFFICIALE</span>
+                            {% endif %}
+                            {{ thread.title }}
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            Di {{ thread.author }} | {{ thread.category.name }}
+                        </h6>
+                        <p class="card-text">{{ thread.content|truncatewords:30 }}</p>
+                        <a href="{% url 'thread_detail' thread.pk %}" class="card-link">Leggi tutto &rarr;</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Nessuna discussione presente.</p>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-3 bg-white rounded shadow-sm">
+                <h3 class="border-bottom pb-2 mb-3">📅 Prossimi Tornei</h3>
+                
+                {% for event in events %}
+                    <div class="mb-4">
+                        <h5>{{ event.title }}</h5>
+                        <p class="small text-muted mb-1">
+                            📍 {{ event.location }}<br>
+                            🗓 {{ event.start_date|date:"d M Y, H:i" }}
+                        </p>
+                        
+                        {% if event.available_spots > 0 %}
+                            <span class="badge bg-success">Posti: {{ event.available_spots }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Sold Out</span>
+                        {% endif %}
+                        <hr>
+                    </div>
+                {% empty %}
+                    <p>Nessun evento in programma.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
