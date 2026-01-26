@@ -70,3 +70,16 @@ def thread_detail(request, pk):
         'form': form
     }
     return render(request, 'core/thread_detail.html', context)
+
+# Funzione per eliminare un thread
+@login_required
+def delete_thread(request, pk):
+    thread = get_object_or_404(Thread, pk=pk)
+    # Controlla se l'utente loggato è l'autore del thread
+    if request.user == thread.author:
+        if request.method == 'POST':
+            thread.delete()
+            return redirect('homepage')
+    return redirect('thread_detail', pk=pk)
+
+# L'admin può sempre eliminare qualsiasi thread tramite l'admin di Django. Non è necessario creare una vista separata per questo scopo.

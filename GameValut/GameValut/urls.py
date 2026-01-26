@@ -15,14 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib.auth import views as auth_views # Importiamo le viste di login standard
-from core.views import homepage, registration, create_thread, thread_detail
+from core.views import delete_thread, homepage, registration, create_thread, thread_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('homepage', homepage, name='homepage'),
-    
+    re_path(r'^$', homepage, name='homepage'),  # La root va alla homepage
     # Registrazione personalizzata
     path('registration/', registration, name='registration'),
 
@@ -33,4 +33,5 @@ urlpatterns = [
     # Per l'aggiunta di thread
     path('newthread/', create_thread, name='create_thread'),
     path('thread/<int:pk>/', thread_detail, name='thread_detail'),
+    path('thread/<int:pk>/delete/', delete_thread, name='delete_thread'),
 ]
