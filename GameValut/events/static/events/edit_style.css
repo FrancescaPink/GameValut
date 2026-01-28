@@ -1,0 +1,81 @@
+/* BASE DARK THEME */
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* CARD STYLING - YELLOW THEME */
+        .card-edit {
+            background-color: #141414;
+            border: 1px solid #ffc107; /* Bordo Giallo */
+            box-shadow: 0 0 25px rgba(255, 193, 7, 0.15); /* Glow Giallo leggero */
+        }
+        
+        /* HEADER STYLE */
+        .edit-header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        /* CAMPI DI INPUT SCURI (Cruciale per il look) */
+        .form-control, .form-select {
+            background-color: #222;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a;
+            color: #fff;
+            border-color: #ffc107; /* Focus Giallo */
+            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        }
+        /* Placeholder grigio chiaro */
+        .form-control::placeholder {
+            color: #888;
+        }
+        
+        /* TEXTAREA RESIZE */
+        textarea {
+            resize: none;
+        }
+
+        /* LABELS */
+        .form-label {
+            color: #ffc107; /* Etichette Gialle */
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* BUTTONS */
+        .btn-save {
+            background-color: #ffc107;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-save:hover {
+            background-color: #e0a800;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+        }
+        .btn-cancel {
+            color: #888;
+            border: 1px solid #444;
+            background: transparent;
+        }
+        .btn-cancel:hover {
+            color: #fff;
+            border-color: #fff;
+            background: #222;
+        }
+        
+        /* FORM TEXT (Help Text) */
+        .form-text {
+            color: #666 !important;
+        }

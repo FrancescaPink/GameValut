@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ event.title }} - Torneo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'core/style.css' %}" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'core/favicon.png' %}">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        
+        <a class="navbar-brand fw-bold" href="{% url 'homepage' %}">
+            🏠 Home
+        </a>
+
+        <a href="{% url 'event_list' %}" class="btn btn-outline-light btn-sm fw-bold">
+            ⬅ Torna alla Lista Eventi
+        </a>
+        
+    </div>
+</nav>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-success text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="card-title mb-0 text-white">🏆 {{ event.title }}</h2>
+                        {% if event.available_spots == 0 %}
+                            <span class="badge bg-danger border border-white">SOLD OUT</span>
+                        {% else %}
+                            <span class="badge bg-light text-success">Iscrizioni Aperte</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-2">
+                            <strong class="text-muted">Organizzato da:</strong><br>
+                            <span class="fs-5">{{ event.organizer.username }}</span>
+                            <span class="badge bg-info text-dark ms-1">✅ Ufficiale</span>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong class="text-muted">Luogo / Piattaforma:</strong><br>
+                            <span class="fs-5">📍 {{ event.location }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <strong class="text-muted">Inizio:</strong><br>
+                            {{ event.start_date|date:"d M Y, H:i" }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong class="text-muted">Fine:</strong><br>
+                            {{ event.end_date|date:"d M Y, H:i" }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h4 class="mb-3">Dettagli Evento</h4>
+                    <p class="card-text fs-5" style="white-space: pre-wrap;">{{ event.description }}</p>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded border">
+                        <div>
+                            <h5 class="mb-0">Posti Disponibili:</h5>
+                            <span class="display-6 fw-bold text-success">{{ event.available_spots }}</span> 
+                            <span class="text-muted">/ {{ event.max_participants }}</span>
+                        </div>
+
+                        <div>
+                            {% if user.is_authenticated %}
+                                
+                                {% if user == event.organizer %}
+                                    <button class="btn btn-secondary disabled">Sei l'organizzatore</button>
+                                
+                                {% elif is_registered %}
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-lg fw-bold" 
+                                            onclick="return confirm('⚠️ Sei sicuro di voler annullare la tua iscrizione?\n\nIl posto tornerà libero e potresti non riuscire a prenotarlo di nuovo.');">
+                                            ❌ Annulla Iscrizione
+                                        </button>
+                                    </form>
+                                    <div class="text-success small mt-1 text-center fw-bold">Sei iscritto!</div>
+
+                                {% elif event.available_spots > 0 %}
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                            ✅ Prenota Posto
+                                        </button>
+                                    </form>
+
+                                {% else %}
+                                    <button class="btn btn-secondary btn-lg disabled">Posti Esauriti 🚫</button>
+                                {% endif %}
+
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-primary">Accedi per partecipare</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user == event.organizer %}
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'update_event' event.pk %}" class="btn btn-warning fw-bold">✏️ Modifica</a>
+                            <a href="{% url 'delete_event' event.pk %}" class="btn btn-danger">🗑️ Elimina Evento</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            {% if user == event.organizer %}
+            <div class="card shadow border-info mt-4">
+                <div class="card-header bg-info text-dark">
+                    <h5 class="mb-0 text-white">📊 Gestione Iscritti (Visibile solo a te)</h5>
+                </div>
+                <div class="card-body">
+                    {% if event.registrations.count > 0 %}
+                        <ul class="list-group">
+                            {% for reg in event.registrations.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>👤 <strong>{{ reg.user.username }}</strong> ({{ reg.user.email }})</span>
+                                    <small class="text-muted">Iscritto il {{ reg.registered_at|date:"d/m H:i" }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">Nessun iscritto al momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

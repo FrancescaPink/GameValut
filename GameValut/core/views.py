@@ -1,5 +1,7 @@
+from django.utils import timezone
 from django.shortcuts import render, redirect
-from .models import Thread, Event
+from .models import Category, Thread
+from events.models import Event
 from .forms import CustomUserCreationForm, Thread, ThreadForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required           # Importante per proteggere la vista
@@ -8,12 +10,21 @@ from .forms import PostForm
 
 def homepage(request):
     # Prendiamo tutti i thread, ordinati dal più recente
-    threads = Thread.objects.all().order_by('-created_at')
-    # Prendiamo tutti gli eventi, ordinati per data di inizio
-    events = Event.objects.all().order_by('start_date')
+    threads = Thread.objects.all().order_by('-created_at')[:5]
+    categories = Category.objects.all()
+    # Eventi Generali (Prossimi 3 in arrivo)
+    upcoming_events = Event.objects.filter(start_date__gte=timezone.now()).order_by('start_date')[:3]
+    # NUOVA LOGICA: Eventi a cui sono iscritto
+    my_events = []
+    if request.user.is_authenticated:
+        # Prendi gli eventi dove esiste una registrazione collegata al mio utente
+        my_events = Event.objects.filter(registrations__user=request.user)
+
     context = {
         'threads': threads,
-        'events': events
+        'categories': categories,
+        'events': upcoming_events, # Quelli generici nella sidebar
+        'my_events': my_events,    # <--- Quelli miei personali
     }
     return render(request, 'core/homepage.html', context)
 
