@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',     # <-- Aggiunta dell'app "core"
     'events',   # <-- Aggiunta dell'app "events"
+    'users',    # <-- Aggiunta dell'app "users"
 ]
 
 MIDDLEWARE = [
@@ -102,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'core.User'
 
-# Dove andare dopo il Login (usa il 'name' della URL che abbiamo dato in urls.py)
+# Dove andare dopo il Login 
 LOGIN_REDIRECT_URL = 'homepage'
 
 # Dove andare dopo il Logout
@@ -124,3 +126,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] 
+# Percorso aggiuntivo per i file statici
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

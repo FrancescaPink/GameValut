@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Event, EventRegistration
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages     # Per usare i messaggi popup
+from django.contrib import messages                     # Per usare i messaggi popup
 from django.core.exceptions import PermissionDenied
 from .forms import EventForm
 
@@ -39,15 +39,15 @@ def event_detail(request, pk):
             else:
                 messages.error(request, "Posti esauriti!")
         return redirect('event_detail', pk=pk)
-
     context = {
         'event': event,
         'is_registered': is_registered,
     }
     return render(request, 'events/event_detail.html', context)
 
+# Per visualizzare la lista di tutti gli eventi
 def event_list(request):
-    # Prendi tutti gli eventi, ordinati dal più vicino
+    # Prendo tutti gli eventi, ordinati dal più vicino
     events = Event.objects.all().order_by('start_date')
     return render(request, 'events/event_list.html', {'events': events})
 
@@ -70,17 +70,17 @@ def delete_event(request, pk):
 @login_required
 def update_event(request, pk):
     event = get_object_or_404(Event, pk=pk)
-    # 1. Sicurezza: Solo l'organizzatore può modificare
+    # Solo l'organizzatore può modificare
     if request.user != event.organizer:
         messages.error(request, "Non puoi modificare eventi non tuoi!")
         return redirect('event_detail', pk=pk)
-    # 2. Gestione Form
+    # Gestione Form
     if request.method == 'POST':
-        form = EventForm(request.POST, instance=event) # <-- instance=event è il trucco per pre-compilare
+        form = EventForm(request.POST, instance=event)          # instance=event è il trucco per pre-compilare (modifica)
         if form.is_valid():
             form.save()
             messages.success(request, "Evento aggiornato con successo!")
             return redirect('event_detail', pk=pk)
     else:
-        form = EventForm(instance=event) # Pre-compila il form con i dati attuali
+        form = EventForm(instance=event)                        # Pre-compila il form con i dati attuali
     return render(request, 'events/update_event.html', {'form': form, 'event': event})

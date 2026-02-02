@@ -1,0 +1,46 @@
+body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar-custom {
+            background-color: #000;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Card Form */
+        .card-custom {
+            background-color: #161616;
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+        }
+
+        /* Input Fields Scuri */
+        .form-control, .form-select {
+            background-color: #222;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a;
+            color: #fff;
+            border-color: #0d6efd; /* Blu Neon al focus */
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Label */
+        .form-label {
+            color: #ffc107; /* Giallo gaming */
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        /* Help Text */
+        .help-text {
+            font-size: 0.85rem;
+            color: #888;
+        }

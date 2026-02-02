@@ -25,7 +25,7 @@
                 
                 <div class="text-muted mb-3 mt-2 d-flex align-items-center flex-wrap">
                     <span class="me-2">Scritto da:</span>
-                    
+
                     <strong class="me-2">{{ thread.author.username }}</strong>
 
                     {% if thread.author.is_company %}
@@ -40,6 +40,29 @@
                     
                     <span class="me-2">&bull;</span>
                     <small>{{ thread.created_at|date:"d M Y, H:i" }}</small>
+
+                    {% if thread.tags.all %}
+                        <span class="me-2 ms-2">&bull;</span>
+                        {% for tag in thread.tags.all %}
+                            <span class="badge bg-light text-dark border border-secondary me-1">#{{ tag.name }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <span class="me-2 ms-2">&bull;</span>
+                    
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'toggle_follow_thread' thread.pk %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            {% if request.user in thread.followers.all %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm fw-bold">
+                                    🔕 Smetti di seguire
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-outline-success btn-sm fw-bold">
+                                    🔔 Segui Discussione
+                                </button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
                 </div>
             </div>
 

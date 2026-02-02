@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Crea Annuncio - Area Aziende</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'core/favicon.png' %}">
+    <style>
+        body { background-color: #121212; color: #fff; }
+        .card-custom { background-color: #1e1e1e; border: 1px solid #333; }
+        .form-control { background-color: #2c2c2c; border: 1px solid #444; color: #fff; }
+        .form-control:focus { background-color: #333; color: #fff; border-color: #0dcaf0; box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25); }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="card card-custom shadow-lg rounded-4">
+                <div class="card-header bg-info text-dark fw-bold p-3 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <span>📰 Pubblica Annuncio Ufficiale</span>
+                    <small>Area Partner</small>
+                </div>
+                
+                <div class="card-body p-4">
+                    <p class="text-secondary mb-4">
+                        Questo annuncio sarà visibile nella sezione "News" e statistiche verranno raccolte nel tuo profilo.
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-info fw-bold">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-info fw-bold">{{ form.content.label }}</label>
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                                <div class="text-danger small">{{ form.content.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-5">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                                ← Annulla e torna al profilo
+                            </a>
+                            <button type="submit" class="btn btn-info fw-bold px-4">
+                                Pubblica Notizia 🚀
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

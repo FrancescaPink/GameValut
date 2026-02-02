@@ -10,20 +10,37 @@
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4 border-bottom border-secondary">
     <div class="container">
-        <a class="navbar-brand" href="#">🎮 GameValut </a>
-        <div class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
-                <span class="nav-item nav-link text-white me-3">Ciao, {{ user.username }}</span>
-                <form action="{% url 'logout' %}" method="post" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-light btn-sm">Esci</button>
-                </form>
-            {% else %}
-                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                <a class="nav-item nav-link" href="{% url 'registration' %}">Registrati</a>
-            {% endif %}
+        
+        <a class="navbar-brand fw-bold text-white fs-3" href="{% url 'homepage' %}">
+            🎮 GameValut
+        </a>
+        
+        <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto align-items-center gap-2">
+                {% if user.is_authenticated %}
+                    
+                    <span class="text-white me-2">Ciao, <strong>{{ user.username }}</strong></span>
+
+                    <a href="{% url 'profile' %}" class="btn btn-outline-warning btn-sm fw-bold">
+                        👤 Profilo
+                    </a>
+
+                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm fw-bold">Esci</button>
+                    </form>
+
+                {% else %}
+                    <a class="btn btn-outline-light btn-sm fw-bold" href="{% url 'login' %}">Accedi</a>
+                    <a class="btn btn-primary btn-sm fw-bold" href="{% url 'registration' %}">Registrati</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>
@@ -37,24 +54,91 @@
                     <a href="{% url 'create_thread' %}" class="btn btn-primary btn-sm">+ Nuova Discussione</a>
                 {% endif %}
             </div> 
+
+            {% if user.is_authenticated %}
+                <div class="mb-4"> <form method="GET" action="{% url 'homepage' %}" class="row g-2 align-items-center">
+                        
+                        <div class="col-md-3">
+                            <input type="text" name="q" class="form-control form-control-sm" placeholder="🔍 Cerca titolo..." value="{{ request.GET.q }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <select name="category" class="form-select form-select-sm">
+                                <option value="">📂 Categoria...</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select name="tag" class="form-select form-select-sm">
+                                <option value="">🏷️ Tag...</option>
+                                {% for tag in tags %}
+                                    <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>
+                                        #{{ tag.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="text" name="author" class="form-control form-control-sm" placeholder="👤 Autore..." value="{{ request.GET.author }}">
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-1">
+                            <button type="submit" class="btn btn-outline-primary btn-sm fw-bold flex-grow-1">Filtra</button>
+                            {% if request.GET.q or request.GET.category or request.GET.tag or request.GET.author %}
+                                <a href="{% url 'homepage' %}" class="btn btn-outline-secondary btn-sm" title="Resetta">✖</a>
+                            {% endif %}
+                        </div>
+
+                    </form>
+                </div>
+            {% else %}
+                <div class="text-center mb-4">
+                    <small class="text"><a href="{% url 'login' %}" class="fw-bold text-decoration-none">Accedi</a> per usare la ricerca avanzata.</small>
+                </div>
+            {% endif %}
+
             {% for thread in threads %}
                 <div class="card mb-3 shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            {% if thread.is_official_announcement %}
-                                <span class="badge bg-danger">UFFICIALE</span>
-                            {% endif %}
-                            {{ thread.title }}
-                        </h5>
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">
+                                {% if thread.is_official_announcement %}
+                                    <span class="badge bg-danger">UFFICIALE</span>
+                                {% endif %}
+                                {{ thread.title }}
+                            </h5>
+                            
+                        </div>
+                        
                         <h6 class="card-subtitle mb-2 text-muted">
-                            Di {{ thread.author }} | {{ thread.category.name }}
+                            Di {{ thread.author }} | {{ thread.created_at|date:"d M Y" }} &nbsp;|&nbsp;
+                            <span class="badge bg-secondary align-self-start">{{ thread.category.name }}</span>
                         </h6>
+
+                        <div class="mb-2">
+                            {% for tag in thread.tags.all %}
+                                <span class="badge bg-info text-dark border border-info-subtle" style="font-size: 0.75em;">#{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+
+                        
                         <p class="card-text">{{ thread.content|truncatewords:30 }}</p>
                         <a href="{% url 'thread_detail' thread.pk %}" class="card-link">Leggi tutto &rarr;</a>
                     </div>
                 </div>
             {% empty %}
-                <p>Nessuna discussione presente.</p>
+                <div class="alert alert-warning text-center">
+                    Nessuna discussione trovata con questi filtri.
+                    {% if request.GET %}
+                        <br><a href="{% url 'homepage' %}" class="alert-link">Resetta Filtri</a>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
 
@@ -86,7 +170,7 @@
             </div>
 
             {% if user.is_authenticated and my_events %}
-                <div class="p-3 bg-white rounded shadow-sm border border-success">
+                <div class="p-3 bg-white rounded shadow-sm border border-success mb-4">
                     <h4 class="border-bottom pb-2 mb-3 text-success">✅ Iscrizioni Attive</h4>
                     
                     <ul class="list-unstyled mb-0">
@@ -104,5 +188,26 @@
                 </div>
             {% endif %}
 
-        </div> </div> </div> </body>
+            <div class="card mb-4 shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">
+                        📰 Annunci Ufficiali
+                    </h5>
+                    
+                    <p class="text mb-3">
+                        Scopri le novità e gli aggiornamenti dai nostri partner ufficiali.
+                    </p>
+
+                    <div class="d-grid">
+                        <a href="{% url 'announcement_list' %}" class="btn btn-outline-success fw-bold">
+                            Vai alla Bacheca ➜
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+    </div> 
+</div> 
+</body>
 </html>

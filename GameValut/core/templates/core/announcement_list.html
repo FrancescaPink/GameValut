@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>News Ufficiali - GameValut</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'core/favicon.png' %}">
+    <style>
+        body { background-color: #0a0a0a; color: #fff; font-family: 'Segoe UI', sans-serif; }
+        .card-news { background-color: #1a1a1a; border: 1px solid #333; transition: transform 0.2s; }
+        .card-news:hover { transform: translateY(-5px); border-color: #ffc107; }
+        .date-badge { background-color: #333; color: #aaa; font-size: 0.8rem; padding: 5px 10px; border-radius: 5px; }
+        .avatar-small { width: 30px; height: 30px; object-fit: cover; border-radius: 50%; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-black mb-5 py-3 border-bottom border-secondary">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'homepage' %}">🏠 Torna alla Home</a>
+        
+        {% if user.is_staff or user.is_company %}
+            <a href="{% url 'create_announcement' %}" class="btn btn-warning fw-bold text-dark">
+                ✍️ Nuova News
+            </a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-info display-5">📰 Bacheca Ufficiale</h1>
+        <p class="text-secondary lead">Tutti gli aggiornamenti e le novità dai nostri partner.</p>
+    </div>
+
+    <div class="row">
+        {% for item in news %} <div class="col-md-8 mx-auto mb-4">
+            <div class="card card-news rounded-4 shadow-lg">
+                <div class="card-body p-4">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center">
+                            {% if item.author.profile.image %}
+                                <img src="{{ item.author.profile.image.url }}" class="avatar-small me-2">
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0 fw-bold text-white">{{ item.author.username }}</h6>
+                                <span class="badge bg-warning text-dark" style="font-size: 0.6em;">PARTNER</span>
+                            </div>
+                        </div>
+                        <span class="date-badge">📅 {{ item.created_at|date:"d M Y" }}</span>
+                    </div>
+
+                    <h3 class="card-title fw-bold mb-3">
+                        <a href="{% url 'announcement_detail' item.pk %}" class="text-decoration-none text-white stretched-link">
+                            {{ item.title }}
+                        </a>
+                    </h3>
+                    
+                    <p class="card-text text-secondary">
+                        {{ item.content|truncatewords:30 }}
+                    </p>
+
+                    <div class="d-flex justify-content-between mt-3 pt-3 border-top border-secondary">
+                        <small class="text-muted">👁️ {{ item.views_count }} visualizzazioni</small>
+                        <small class="text-info">💬 {{ item.comments.count }} commenti</small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <div class="col-12 text-center mt-5">
+                <h3 class="text-muted">Nessuna notizia pubblicata al momento.</h3>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

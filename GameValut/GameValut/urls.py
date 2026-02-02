@@ -16,25 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from django.contrib.auth import views as auth_views # Importiamo le viste di login standard
+from django.contrib.auth import views as auth_views 
 from core.views import delete_thread, homepage, registration, create_thread, thread_detail
+from django.conf import settings
+from django.conf.urls.static import static
+from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('homepage', homepage, name='homepage'),
-    re_path(r'^$', homepage, name='homepage'),  # La root va alla homepage
-    # Registrazione personalizzata
-    path('registration/', registration, name='registration'),
-
-    # Login e Logout standard di Django
-    path('login/', auth_views.LoginView.as_view(template_name='core/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='homepage'), name='logout'),
-
-    # Per l'aggiunta di thread
-    path('newthread/', create_thread, name='create_thread'),
-    path('thread/<int:pk>/', thread_detail, name='thread_detail'),
-    path('thread/<int:pk>/delete/', delete_thread, name='delete_thread'),
-
-    # Includiamo le URL dell'app "events"
+    # Includo le URL dell'app "events"
     path('events/', include('events.urls')), 
+    # Includo le URL dell'app "users"
+    path('users/', include('users.urls')),
+    # Includo le urls dell'app "core" per le news
+    path('', include('core.urls')),
 ]
+
+# Aggiungo il supporto per i file multimediali in fase di sviluppo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -27,6 +27,7 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+# Modello per le iscrizioni agli eventi
 class EventRegistration(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="event_registrations")

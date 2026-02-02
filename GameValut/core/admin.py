@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Category, Thread, Post
+from .models import User, Category, Thread, Post, Tag, Announcement, AnnouncementComment
 
 # Configurazione personalizzata per vedere il campo "is_company" nella lista utenti
 class CustomUserAdmin(UserAdmin):
@@ -14,3 +14,6 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Category)
 admin.site.register(Thread)
 admin.site.register(Post)
+admin.site.register(Tag)
+admin.site.register(Announcement)
+admin.site.register(AnnouncementComment)

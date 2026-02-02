@@ -1,51 +1,108 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="it">
-{% load static %}
-<link href="{% static 'core/style.css' %}" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
-    <title>Nuova Discussione</title>
+    <title>Nuova Discussione - GameValut</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="{% static 'core/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'core/create_thread_style.css' %}">
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container mt-5">
+<nav class="navbar navbar-dark navbar-custom mb-5 py-3">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="{% url 'homepage' %}">🎮 GameValut</a>
+        <a href="{% url 'profile' %}" class="btn btn-outline-light btn-sm">👤 Profilo</a>
+    </div>
+</nav>
+
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Avvia una nuova discussione</h4>
-                </div>
-                <div class="card-body">
+        
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4">
+                <h2 class="fw-bold text-white mb-0">🖊️ Crea Nuova Discussione</h2>
+            </div>
+
+            <div class="card card-custom rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    
                     <form method="post">
                         {% csrf_token %}
                         
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Titolo</label>
-                            {{ form.title }} 
-                            </div>
+                        <div class="mb-4">
+                            <label class="form-label">Titolo della Discussione</label>
+                            {{ form.title }}
+                            <div class="help-text mt-1">Sii specifico e conciso.</div>
+                        </div>
                         
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Categoria</label>
+                        <div class="mb-4">
+                            <label class="form-label">Categoria</label>
                             {{ form.category }}
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Messaggio</label>
+                        <div class="mb-4">
+                            <label class="form-label">Tag</label>
+                            {{ form.tags }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Il tuo Messaggio</label>
                             {{ form.content }}
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'homepage' %}" class="btn btn-secondary">Annulla</a>
-                            <button type="submit" class="btn btn-primary">Pubblica Discussione</button>
+                        <hr class="border-secondary my-4">
+
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="{% url 'homepage' %}" class="btn btn-outline-secondary fw-bold px-4">Annulla</a>
+                            <button type="submit" class="btn btn-primary fw-bold px-4 shadow-sm">🚀 Pubblica Ora</button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card card-custom rounded-4 p-4 mt-5 mt-lg-0 sticky-top" style="top: 20px; z-index: 1;">
+                <h5 class="text-warning fw-bold mb-3">📜 Linee Guida</h5>
+                <ul class="list-unstyled text-secondary small mb-0 spacing-y-2">
+                    <li class="mb-2">1. Sii rispettoso verso gli altri utenti.</li>
+                    <li class="mb-2">2. Controlla che non esista già un topic simile.</li>
+                    <li class="mb-2">3. Non spammare o andare off-topic.</li>
+                    <li class="mb-2">4. Usa un linguaggio appropriato.</li>
+                    <li>5. Divertiti e condividi la tua passione!</li>
+                </ul>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+    // Questo script prende i campi generati da Django e applica lo stile Dark Mode di Bootstrap
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputs = document.querySelectorAll('input[type="text"], textarea, select');
+        
+        inputs.forEach(function(input) {
+            // Aggiunge la classe base
+            input.classList.add('form-control');
+            
+            // Stile specifico per renderli scuri
+            input.style.backgroundColor = "#222";
+            input.style.color = "#fff";
+            input.style.border = "1px solid #444";
+            input.style.padding = "10px";
+            input.style.borderRadius = "8px"; // Bordi arrotondati
+            
+            // Se è la textarea, la facciamo più alta
+            if (input.tagName === 'TEXTAREA') {
+                input.rows = 8;
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
