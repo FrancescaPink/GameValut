@@ -9,14 +9,16 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required           # Importante per proteggere la vista
 from .forms import PostForm
 
+# Funzione per la homepage - mostra i thread del forum e filtri di ricerca, oltre agli eventi e i filtri
 def homepage(request):
     # Prendo tutti i thread, ordinati dal più recente
     threads = Thread.objects.all().order_by('-created_at')
+    # Prendo tutte le categorie e i tag per i filtri
     categories = Category.objects.all()
     tags = Tag.objects.all()
     # Eventi Generali (Prossimi 3 in arrivo)
     upcoming_events = Event.objects.filter(start_date__gte=timezone.now()).order_by('start_date')[:3]
-    # Filtro Titolo
+    # Filtro Titolo - dentro c'è q perché è il nome del parametro nella barra di ricerca
     title_query = request.GET.get('q')
     if title_query:
         threads = threads.filter(title__icontains=title_query)
@@ -42,22 +44,25 @@ def homepage(request):
         'categories': categories,
         'tags': tags,
         'events': upcoming_events,          # Quelli generici nella sidebar
-        'my_events': my_events,             # <--- Quelli miei personali
+        'my_events': my_events,             # Quelli miei personali
     }
+    # Rendo il template con il contesto
     return render(request, 'core/homepage.html', context)
 
 # Funzione per la registrazione
 def registration(request):
+    # Se il metodo è POST, significa che l'utente ha inviato il form
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)         # Uso la classe CustomUserCreationForm definita in forms.py
         if form.is_valid():
             user = form.save()
             login(request, user)                # Logga l'utente subito dopo la registrazione
             return redirect('homepage')         # Lo rimanda alla home
     else:
-        form = CustomUserCreationForm()
+        form = CustomUserCreationForm()         # Se request.method non è POST, mostra il form vuoto
     return render(request, 'core/registration.html', {'form': form})
 
+# Funzione per creare un nuovo thread nel forum
 @login_required                             # Decoratore che blocca l'accesso se non sei loggato
 def create_thread(request):
     if request.method == 'POST':
@@ -93,7 +98,7 @@ def thread_detail(request, pk):
             # Ricarica la pagina per vedere il nuovo messaggio
             return redirect('thread_detail', pk=pk)
     else:
-        form = PostForm()
+        form = PostForm()       # Se non è POST o non sei loggato, rimani con il form vuoto
     context = {
         'thread': thread,
         'posts': posts,
@@ -119,10 +124,6 @@ def announcement_list(request):
     news = Announcement.objects.all()
     return render(request, 'core/announcement_list.html', {'news': news})
 
-# Funzione di controllo: restituisce True se è azienda (o staff)
-# def is_company_check(user):
-#     return user.is_authenticated and (user.is_staff or getattr(user, 'is_company', False))
-
 # CREAZIONE ANNUNCI (Solo Aziende)
 @login_required
 def create_announcement(request):
@@ -136,7 +137,7 @@ def create_announcement(request):
             announcement = form.save(commit=False)
             announcement.author = request.user
             announcement.save()
-            return redirect('profile') 
+            return redirect('announcement_detail', pk=announcement.pk) 
     else:
         form = AnnouncementForm()
     # Rende il template con il form
@@ -145,8 +146,9 @@ def create_announcement(request):
 # DETTAGLIO ANNUNCI(+ Contatore Views)
 def announcement_detail(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
-    # Gestione Conteggio Visualizzazioni
+    # Gestione Conteggio Visualizzazioni - uso le sessioni per evitare conteggi multipli dallo stesso utente
     session_key = f'viewed_announcement_{pk}'
+    # Se l'utente non ha ancora visto questo annuncio, incremento il contatore
     if not request.session.get(session_key, False):
         announcement.views_count += 1
         announcement.save()

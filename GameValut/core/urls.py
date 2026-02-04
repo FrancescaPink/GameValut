@@ -20,7 +20,7 @@ urlpatterns = [
     path('thread/<int:pk>/follow/', views.toggle_follow_thread, name='toggle_follow_thread'),
     # Per la gestione degli annunci
     path('news/', views.announcement_list, name='announcement_list'),
-    path('news/create/', views.create_announcement, name='create_announcement'), # <--- QUESTA MANCAVA
+    path('news/create/', views.create_announcement, name='create_announcement'), 
     path('news/<int:pk>/', views.announcement_detail, name='announcement_detail'),
     path('news/<int:pk>/edit/', views.edit_announcement, name='edit_announcement'),
     path('news/<int:pk>/delete/', views.delete_announcement, name='delete_announcement'),

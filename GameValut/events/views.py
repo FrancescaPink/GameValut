@@ -5,6 +5,7 @@ from django.contrib import messages                     # Per usare i messaggi p
 from django.core.exceptions import PermissionDenied
 from .forms import EventForm
 
+# Funzione per creare un nuovo evento - accessibile solo agli utenti aziendali
 @login_required
 def create_event(request):
     # Solo gli utenti aziendali possono creare gli eventi
@@ -21,11 +22,13 @@ def create_event(request):
         form = EventForm()
     return render(request, 'events/create_event.html', {'form': form})
 
+# Dettaglio di un evento specifico, con possibilità di iscriversi o annullare l'iscrizione (la logica è gestita in POST)
 def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
     # Controllo se l'utente è già iscritto
     is_registered = False
     if request.user.is_authenticated:
+        # Verifico se esiste già una registrazione per questo utente e evento con la logica di filter + exists con una query efficiente al db
         is_registered = event.registrations.filter(user=request.user).exists()
     # LOGICA DI PRENOTAZIONE (POST)
     if request.method == 'POST' and request.user.is_authenticated:
@@ -76,7 +79,8 @@ def update_event(request, pk):
         return redirect('event_detail', pk=pk)
     # Gestione Form
     if request.method == 'POST':
-        form = EventForm(request.POST, instance=event)          # instance=event è il trucco per pre-compilare (modifica)
+        # instance=event serve per dire a Django che voglio modificare questo evento esistente, non crearne uno nuovo
+        form = EventForm(request.POST, instance=event)         
         if form.is_valid():
             form.save()
             messages.success(request, "Evento aggiornato con successo!")

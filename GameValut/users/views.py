@@ -7,7 +7,7 @@ from .forms import UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 
 # View per la gestione del profilo utente e della dashboard
-@login_required(login_url='/admin/login/')
+@login_required(login_url='/admin/login/')      # Protegge la view richiedendo il login, se non loggato reindirizza alla pagina di login admin
 def profile(request):
     # Gestione profilo (creazione se non esiste)
     try:

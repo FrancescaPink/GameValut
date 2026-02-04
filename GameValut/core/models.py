@@ -9,13 +9,17 @@ class User(AbstractUser):
         default=False, 
         help_text="Spunta questa casella se l'account appartiene a un'azienda/organizzatore."
     )
+    # Il metodo __str__ serve a definire come viene rappresentato l'oggetto come stringa
     def __str__(self):
         return self.username
 
-# SEZIONE FORUM (Discussioni)
-class Category(models.Model):
+# SEZIONE FORUM (Discussioni) - Modelli per categorie, tag, thread e post
+
+# Modello per le categorie dei thread
+class Category(models.Model):           
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    # Le class Meta servono per definire comportamenti particolari del modello
     class Meta:
         verbose_name_plural = "Categories"
     def __str__(self):
@@ -23,7 +27,7 @@ class Category(models.Model):
 
 # Modello per i tag dei thread
 class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)     # unique=True serve a non avere tag duplicati
     def __str__(self):
         return self.name
 
@@ -34,9 +38,9 @@ class Thread(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="threads")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="threads", null=True)
     tags = models.ManyToManyField(Tag, blank=True, related_name="threads")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    # [cite_start]Campo per distinguere gli annunci ufficiali delle aziende [cite: 31]
+    created_at = models.DateTimeField(auto_now_add=True)        # Il campo auto_now_add imposta automaticamente la data di creazione
+    updated_at = models.DateTimeField(auto_now=True)            # Il campo auto_now aggiorna automaticamente la data ad ogni salvataggio
+    # Campo per distinguere gli annunci ufficiali delle aziende
     is_official_announcement = models.BooleanField(default=False) 
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followed_threads', blank=True)
     def __str__(self):

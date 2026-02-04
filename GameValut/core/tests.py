@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from .models import User, Thread, Category, Tag
 
+# Estendo TestCase di Django per creare test automatici - uso il database di test temporaneo
 class ForumLogicTest(TestCase):
     # REQ 1: Testare codice applicativo (Logica Backend). Oggetto: Creazione Thread e gestione Tag.
     def setUp(self):
@@ -10,6 +11,7 @@ class ForumLogicTest(TestCase):
         self.category = Category.objects.create(name='News')
         self.tag = Tag.objects.create(name='Urgente')
 
+    # Simulazione della creazione di un thread con tag associato nel db
     def test_thread_creation_logic(self):
         # CASO VALIDO: Creazione corretta di un thread e associazione dati.
         # Creazione del thread
@@ -27,6 +29,7 @@ class ForumLogicTest(TestCase):
         self.assertTrue(thread.tags.filter(name='Urgente').exists())        # Il tag è stato aggiunto?
         print("\n✅ Test Logica 1: Creazione Thread e Tag -> OK")
 
+    # Simulazione della rappresentazione stringa di un thread
     def test_thread_string_representation(self):
         #CASO LOGICO: Verifica che il metodo __str__ restituisca il titolo e l'autore.
         thread = Thread.objects.create(
@@ -38,8 +41,9 @@ class ForumLogicTest(TestCase):
         self.assertEqual(str(thread), expected_string)
         print("✅ Test Logica 2: Rappresentazione Stringa (__str__) -> OK")
 
+# Test delle viste (pagine web) di Django - uso Client, un browser finto di Django per simulare richieste HTTP
 class HomepageViewTest(TestCase):
-    # REQ 2: Testare una 'vista' (pagina) utente. Oggetto: Home Page con Filtri di Ricerca.
+    # REQ 2: Testare una vista (pagina) utente. Oggetto: Home Page con Filtri di Ricerca.
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='visitatore', password='pw')
@@ -50,12 +54,14 @@ class HomepageViewTest(TestCase):
         self.thread_ps = Thread.objects.create(title='God of War', author=self.user, category=self.cat_ps, content='Testo')
         self.thread_xbox = Thread.objects.create(title='Halo Infinite', author=self.user, category=self.cat_xbox, content='Testo')
 
+    # Test della risposta della homepage
     def test_homepage_status_code(self):
         # Verifica Base: La pagina risponde correttamente (HTTP 200).
         response = self.client.get(reverse('homepage'))
         self.assertEqual(response.status_code, 200)
         print("✅ Test Vista 1: Caricamento Pagina (Status 200) -> OK")
 
+    # Test del filtro di ricerca nella homepage
     def test_homepage_search_filter_valid(self):
         # Verifica Black-Box (Input Valido): Cerco 'Halo'. Risultato atteso: Vedo 'Halo', NON 'God of War'.
         response = self.client.get(reverse('homepage'), {'q': 'Halo'})
@@ -64,6 +70,7 @@ class HomepageViewTest(TestCase):
         self.assertNotContains(response, 'God of War')      # NON deve esserci
         print("✅ Test Vista 2: Filtro Ricerca Funzionante -> OK")
 
+    # Test della ricerca senza risultati
     def test_homepage_search_no_results(self):
         # Verifica Black-Box (Input Valido ma senza risultati): Cerco 'Super Mario'. Risultato atteso: Nessun thread trovato.
         response = self.client.get(reverse('homepage'), {'q': 'Super Mario'})

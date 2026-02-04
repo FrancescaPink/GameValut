@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 # Form per la creazione/modifica di un Evento
 class EventForm(forms.ModelForm):
     class Meta:
-        model = Event
+        model = Event       # Associo il form al modello Event che si trova in models.py
         fields = ['title', 'description', 'location', 'start_date', 'end_date', 'max_participants']
         labels = {
             'title': 'Nome del Torneo/Evento',
@@ -20,16 +20,17 @@ class EventForm(forms.ModelForm):
             'end_date': forms.TextInput(attrs={'type': 'datetime-local'}),
         }
 
-    # Uso la classe form-control di Bootstrap per tutti i campi
+    # Personalizzazione dell'aspetto dei campi del form (aggiungo la classe form-control di Bootstrap per uniformità estetica)
     def __init__(self, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
+        # Super serve a chiamare il costruttore della classe padre per inizializzare correttamente il form
+        super(EventForm, self).__init__(*args, **kwargs)        
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
 
     # Validazione date: la data di fine deve essere dopo la data di inizio
     def clean(self):
         # Recupero i dati puliti (già convertiti nei tipi corretti da Django)
-        cleaned_data = super().clean()
+        cleaned_data = super().clean()       
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         # Verifica logica: se entrambe le date esistono, controlla l'ordine
