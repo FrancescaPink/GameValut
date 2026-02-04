@@ -37,7 +37,7 @@ Segui questi passaggi per avviare il progetto in locale.
 
 ### 1. Clona la repository
 ```bash
-git clone [https://github.com/TUO_USERNAME/GameValut.git](https://github.com/TUO_USERNAME/GameValut.git)
+git clone https://github.com/FrancescaPink/GameValut.git
 cd GameValut
 ```
 
